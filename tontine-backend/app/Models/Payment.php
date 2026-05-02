@@ -1,0 +1,26 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Payment extends Model
+{
+    protected $fillable = [
+        'round_id',
+        'user_id',
+        'amount',
+        'status',
+        'payment_date',
+    ];
+
+    public function round()
+    {
+        return $this->belongsTo(Round::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+}
