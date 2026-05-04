@@ -313,12 +313,13 @@ async function releaseFunds() {
     setTimeout(() => {
         const benId = tontine.orderedMembersFinal[tontine.currentRoundIndex];
         const ben = membersDB.find(m => m.id === benId);
+        const benName = ben ? ben.name : "Bénéficiaire inconnu";
         
         if(!tontine.archives) tontine.archives = [];
         if(!tontine.events) tontine.events = [];
 
-        tontine.archives.unshift({ round: tontine.currentRoundIndex + 1, ben: ben.name, date: new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString() });
-        tontine.events.unshift({ time: new Date().toLocaleTimeString(), msg: `🔓 FUNDS RELEASED: ${tontine.totalCagnotte} FCFA -> ${ben.name}` });
+        tontine.archives.unshift({ round: tontine.currentRoundIndex + 1, ben: benName, date: new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString() });
+        tontine.events.unshift({ time: new Date().toLocaleTimeString(), msg: `🔓 FUNDS RELEASED: ${tontine.totalCagnotte} FCFA -> ${benName}` });
         
         tontine.currentRoundIndex++;
         tontine.roundPaidStatus = {};
