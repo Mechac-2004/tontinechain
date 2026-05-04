@@ -21,45 +21,36 @@ function loadData() {
     if(storedTontines) tontinesDB = JSON.parse(storedTontines);
     else tontinesDB = [];
     
-    // Au chargement, si mobile, on s'assure d'être sur la création
-    if(window.innerWidth <= 600) {
-        showScreen('creation');
-    }
+    // Au chargement, on montre le menu principal
+    showScreen('main');
 }
 
 function saveMembers() { localStorage.setItem('tontinechain_members', JSON.stringify(membersDB)); }
 function saveTontines() { localStorage.setItem('tontinechain_tontines', JSON.stringify(tontinesDB)); }
 
-// ---------- NAVIGATION MOBILE ----------
+// ---------- NAVIGATION MOBILE SIMPLIFIÉE ----------
 function showScreen(screen) {
     const creation = document.getElementById('creationCard');
     const listing = document.getElementById('listingCard');
     const details = document.getElementById('tontineDetailsSection');
     const backBtn = document.getElementById('mobileBackBtn');
 
-    if(window.innerWidth > 600) {
+    if(screen === 'main') {
+        // Mode Menu : On voit Création et Liste
         creation.classList.remove('mobile-hidden');
         listing.classList.remove('mobile-hidden');
-        if(details.style.display === 'block') {
-             backBtn.style.display = 'none';
-        }
-        return;
-    }
-
-    // Reset mobile classes
-    creation.classList.add('mobile-hidden');
-    listing.classList.add('mobile-hidden');
-    details.classList.add('mobile-hidden');
-    if(backBtn) backBtn.style.display = 'none';
-
-    if(screen === 'creation') {
-        creation.classList.remove('mobile-hidden');
-    } else if (screen === 'listing') {
-        listing.classList.remove('mobile-hidden');
+        details.classList.add('mobile-hidden');
+        details.style.display = 'none';
+        if(backBtn) backBtn.style.display = 'none';
     } else if (screen === 'details') {
+        // Mode Dashboard : On ne voit que les détails
+        if(window.innerWidth <= 600) {
+            creation.classList.add('mobile-hidden');
+            listing.classList.add('mobile-hidden');
+        }
         details.classList.remove('mobile-hidden');
         details.style.display = 'block';
-        if(backBtn) backBtn.style.display = 'inline-block';
+        if(backBtn && window.innerWidth <= 600) backBtn.style.display = 'inline-block';
     }
 }
 
@@ -77,11 +68,6 @@ async function connectWallet() {
             btn.style.display = 'none';
             addrElem.style.display = 'inline-block';
             addrElem.innerHTML = `<i class="fas fa-check-circle"></i> ${address.substring(0,6)}...${address.substring(address.length-4)}`;
-            
-            // Sur mobile, après connection, on peut montrer la liste si des tontines existent
-            if(window.innerWidth <= 600 && tontinesDB.length > 0) {
-                showScreen('listing');
-            }
         } catch (error) {
             alert("Connexion refusée.");
             btn.innerHTML = '<i class="fas fa-wallet"></i> Connect Wallet';
@@ -93,7 +79,6 @@ async function connectWallet() {
             btn.style.display = 'none';
             addrElem.style.display = 'inline-block';
             addrElem.innerHTML = `<i class="fas fa-check-circle"></i> ${fakeAddr.substring(0,6)}...${fakeAddr.substring(fakeAddr.length-4)}`;
-            if(window.innerWidth <= 600 && tontinesDB.length > 0) showScreen('listing');
         }, 1000);
     }
 }
@@ -142,7 +127,8 @@ function renderMembersChecklist() {
         </div>
     `).join('');
     updateTontineSummary();
-    document.getElementById('membersCount').textContent = `${membersDB.length} membres inscrits`;
+    const countElem = document.getElementById('membersCount');
+    if(countElem) countElem.textContent = `${membersDB.length} membres inscrits`;
 }
 
 function renderTontines() {
@@ -168,10 +154,13 @@ function renderTontines() {
 }
 
 function updateTontineSummary() {
-    const montant = parseInt(document.getElementById('montant').value) || 0;
+    const montantElem = document.getElementById('montant');
+    const montant = montantElem ? parseInt(montantElem.value) || 0 : 0;
     const count = getSelectedMemberCount();
-    document.getElementById('totalCagnotteDisplay').textContent = `${(montant * count).toLocaleString()} FCFA`;
-    document.getElementById('dureeDisplay').textContent = `${count} cycles`;
+    const cagnotteElem = document.getElementById('totalCagnotteDisplay');
+    const dureeElem = document.getElementById('dureeDisplay');
+    if(cagnotteElem) cagnotteElem.textContent = `${(montant * count).toLocaleString()} FCFA`;
+    if(dureeElem) dureeElem.textContent = `${count} cycles`;
 }
 
 function createTontine() {
@@ -180,7 +169,7 @@ function createTontine() {
     const selectedIds = Array.from(document.querySelectorAll('.member-checkbox:checked')).map(cb => cb.value);
 
     if(!name || isNaN(montant) || selectedIds.length < 2) {
-        alert("Veuillez remplir tous les champs.");
+        alert("Veuillez remplir tous les champs et sélectionner au moins 2 membres.");
         return;
     }
 
@@ -203,12 +192,8 @@ function createTontine() {
     saveTontines();
     renderTontines();
     
-    // Sur mobile, on bascule vers les détails immédiatement
-    if(window.innerWidth <= 600) {
-        openTontineDetails(newTontine.id);
-    } else {
-        alert("Smart Contract déployé !");
-    }
+    // On ouvre immédiatement les détails
+    openTontineDetails(newTontine.id);
 }
 
 function openTontineDetails(id) {
@@ -216,22 +201,18 @@ function openTontineDetails(id) {
     const tontine = tontinesDB.find(t => t.id === id);
     if(!tontine) return;
 
-    const details = document.getElementById('tontineDetailsSection');
-    details.style.display = 'block';
     showScreen('details');
     
     document.getElementById('contractBadge').textContent = tontine.contractAddress;
     document.getElementById('detailTitle').textContent = tontine.name || "Tontine sans nom";
     
     updateRoundUI(tontine);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function closeTontineDetails() {
-    document.getElementById('tontineDetailsSection').style.display = 'none';
     activeTontineId = null;
-    if(window.innerWidth <= 600) {
-        showScreen(tontinesDB.length > 0 ? 'listing' : 'creation');
-    }
+    showScreen('main');
 }
 
 function updateRoundUI(tontine) {
@@ -311,14 +292,15 @@ async function releaseFunds() {
     }
 
     setTimeout(() => {
-        const benId = tontine.orderedMembersFinal[tontine.currentRoundIndex];
+        const roundIdx = tontine.currentRoundIndex;
+        const benId = tontine.orderedMembersFinal[roundIdx];
         const ben = membersDB.find(m => m.id === benId);
         const benName = ben ? ben.name : "Bénéficiaire inconnu";
         
         if(!tontine.archives) tontine.archives = [];
         if(!tontine.events) tontine.events = [];
 
-        tontine.archives.unshift({ round: tontine.currentRoundIndex + 1, ben: benName, date: new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString() });
+        tontine.archives.unshift({ round: roundIdx + 1, ben: benName, date: new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString() });
         tontine.events.unshift({ time: new Date().toLocaleTimeString(), msg: `🔓 FUNDS RELEASED: ${tontine.totalCagnotte} FCFA -> ${benName}` });
         
         tontine.currentRoundIndex++;
@@ -348,14 +330,6 @@ function addMember(name, email) {
     saveMembers();
 }
 
-// Timer
-setInterval(() => {
-    const timerElem = document.getElementById('timerDisplay');
-    if(timerElem && activeTontineId) {
-        // Logique simplifiée du timer
-    }
-}, 1000);
-
 // Events
 document.getElementById('connectWalletBtn')?.addEventListener('click', connectWallet);
 document.getElementById('createTontineBtn')?.addEventListener('click', createTontine);
@@ -375,7 +349,8 @@ document.getElementById('montant')?.addEventListener('input', updateTontineSumma
 document.addEventListener('change', (e) => { if(e.target.classList.contains('member-checkbox')) updateTontineSummary(); });
 
 window.addEventListener('resize', () => {
-    if(window.innerWidth > 600) showScreen('all');
+    if(activeTontineId) showScreen('details');
+    else showScreen('main');
 });
 
 loadData();
