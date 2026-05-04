@@ -265,10 +265,10 @@ function updateRoundUI(tontine) {
     }).join('');
 
     // Logs & Archives
-    document.getElementById('eventLogs').innerHTML = tontine.events.map(e => `<div style="margin-bottom:4px;"><span style="color:#2ecc71;">[${e.time}]</span> ${e.msg}</div>`).join('');
+    document.getElementById('eventLogs').innerHTML = (tontine.events || []).map(e => `<div style="margin-bottom:4px;"><span style="color:#2ecc71;">[${e.time}]</span> ${e.msg}</div>`).join('');
     
     const archiveBox = document.getElementById('archivedRounds');
-    if(tontine.archives.length === 0) {
+    if(!tontine.archives || tontine.archives.length === 0) {
         archiveBox.innerHTML = '<p class="text-muted" style="font-style: italic;">Aucun round archivé.</p>';
     } else {
         archiveBox.innerHTML = tontine.archives.map(a => `
