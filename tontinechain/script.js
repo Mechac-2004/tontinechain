@@ -243,8 +243,8 @@ function updateRoundUI(tontine) {
     document.getElementById('roundInfoDisplay').textContent = `Beneficiaire du Round ${roundIdx + 1} sur ${tontine.dureeCycles}`;
     
     // Progrès
-    const paidCount = Object.values(tontine.roundPaidStatus).filter(v => v === true).length;
     const totalToPay = tontine.orderedMembersFinal.length;
+    const paidCount = tontine.orderedMembersFinal.filter(mId => tontine.roundPaidStatus[mId] === true).length;
     
     document.getElementById('cagnotteProgress').textContent = `${(paidCount * tontine.montant).toLocaleString()} / ${tontine.totalCagnotte.toLocaleString()} FCFA`;
     updateChart(paidCount, totalToPay);
