@@ -28,7 +28,6 @@ function loadData() {
 function saveMembers() { localStorage.setItem('tontinechain_members', JSON.stringify(membersDB)); }
 function saveTontines() { localStorage.setItem('tontinechain_tontines', JSON.stringify(tontinesDB)); }
 
-// ---------- NAVIGATION MOBILE SIMPLIFIÉE ----------
 function showScreen(screen) {
     const creation = document.getElementById('creationCard');
     const listing = document.getElementById('listingCard');
@@ -39,17 +38,10 @@ function showScreen(screen) {
     const tabC = document.getElementById('tabCreation');
     const tabL = document.getElementById('tabListing');
 
-    // Desktop
-    if(window.innerWidth > 600) {
-        creation.classList.remove('mobile-hidden');
-        listing.classList.remove('mobile-hidden');
-        details.classList.remove('mobile-hidden');
-        if(mobileNav) mobileNav.style.display = 'none';
-        return;
+    // Mobile Nav Visibility
+    if(mobileNav) {
+        mobileNav.style.display = (window.innerWidth <= 600 && screen !== 'details') ? 'flex' : 'none';
     }
-
-    // Mobile
-    if(mobileNav) mobileNav.style.display = 'flex';
     
     if(screen === 'creation') {
         creation.classList.remove('mobile-hidden'); creation.style.display = 'block';
