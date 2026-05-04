@@ -13,7 +13,7 @@ Ce script est conçu pour vous guider lors de l'enregistrement de votre vidéo d
 
 ## 🏗️ Étape 2 : Création du Contrat (1:00 - 2:00)
 **[Action : Remplissez le formulaire à gauche : Nom, Montant, sélectionnez 3 membres]**
-"Nous allons maintenant créer une nouvelle tontine. Je définis le montant des cotisations à 10 000 FCFA et je sélectionne les membres participants dans notre liste intégrée. "
+"Nous allons maintenant créer une nouvelle tontine. Je définis le montant des cotisations à 10 000 FCFA et je sélectionne les membres participants dans notre liste intégrée."
 
 **[Action : Cliquez sur "INITIALISER SUR LA BLOCKCHAIN"]**
 "En cliquant ici, nous déployons une instance de notre **Smart Contract Solidity**. Vous pouvez voir dans le journal des événements en bas que le contrat a été initialisé avec une adresse unique. Toutes les règles (pénalités, ordre de passage) sont désormais inscrites dans le code et ne peuvent plus être modifiées."
