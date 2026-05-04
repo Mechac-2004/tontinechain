@@ -21,11 +21,21 @@
             <button id="connectWalletBtn" class="btn-sm" style="background: #1e8f5e; color: white; border: none; padding: 10px 20px; box-shadow: 0 4px 10px rgba(30, 143, 94, 0.2);">
                 <i class="fas fa-wallet"></i> Connect Wallet
             </button>
-            <span id="walletAddress" class="badge" style="display: none; background: #eaf5ee; color: #1e6e4a;">Non connecté</span>
+        <span id="walletAddress" class="badge" style="display: none; background: #eaf5ee; color: #1e6e4a;">Non connecté</span>
         </div>
     </div>
 
-    <div class="dashboard">
+    <!-- Navigation Mobile (Onglets) -->
+    <div id="mobileNav" class="mobile-only" style="display: none; margin-bottom: 20px; background: white; padding: 10px; border-radius: 20px; display: flex; gap: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+        <button onclick="showScreen('creation')" id="tabCreation" class="btn-sm" style="flex:1; background: #1b5e3f; color: white; border-radius:15px; padding: 12px;">
+            <i class="fas fa-plus"></i> Créer
+        </button>
+        <button onclick="showScreen('listing')" id="tabListing" class="btn-sm" style="flex:1; background: #f8f9fa; color: #7f8c8d; border-radius:15px; padding: 12px; border: 1px solid #eee;">
+            <i class="fas fa-list"></i> Mes Contrats
+        </button>
+    </div>
+
+    <div id="mainDashboard" class="dashboard">
         <!-- COLONNE GAUCHE : Création tontine + règles -->
         <div id="creationCard" class="card">
             <div class="card-header">

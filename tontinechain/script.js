@@ -34,23 +34,41 @@ function showScreen(screen) {
     const listing = document.getElementById('listingCard');
     const details = document.getElementById('tontineDetailsSection');
     const backBtn = document.getElementById('mobileBackBtn');
+    const mobileNav = document.getElementById('mobileNav');
+    
+    const tabC = document.getElementById('tabCreation');
+    const tabL = document.getElementById('tabListing');
 
-    if(screen === 'main') {
-        // Mode Menu : On voit Création et Liste
+    // Desktop
+    if(window.innerWidth > 600) {
         creation.classList.remove('mobile-hidden');
         listing.classList.remove('mobile-hidden');
+        details.classList.remove('mobile-hidden');
+        if(mobileNav) mobileNav.style.display = 'none';
+        return;
+    }
+
+    // Mobile
+    if(mobileNav) mobileNav.style.display = 'flex';
+    
+    if(screen === 'creation') {
+        creation.classList.remove('mobile-hidden');
+        listing.classList.add('mobile-hidden');
         details.classList.add('mobile-hidden');
-        details.style.display = 'none';
-        if(backBtn) backBtn.style.display = 'none';
+        tabC.style.background = '#1b5e3f'; tabC.style.color = 'white';
+        tabL.style.background = '#f8f9fa'; tabL.style.color = '#7f8c8d';
+    } else if (screen === 'listing') {
+        creation.classList.add('mobile-hidden');
+        listing.classList.remove('mobile-hidden');
+        details.classList.add('mobile-hidden');
+        tabL.style.background = '#1b5e3f'; tabL.style.color = 'white';
+        tabC.style.background = '#f8f9fa'; tabC.style.color = '#7f8c8d';
     } else if (screen === 'details') {
-        // Mode Dashboard : On ne voit que les détails
-        if(window.innerWidth <= 600) {
-            creation.classList.add('mobile-hidden');
-            listing.classList.add('mobile-hidden');
-        }
+        creation.classList.add('mobile-hidden');
+        listing.classList.add('mobile-hidden');
         details.classList.remove('mobile-hidden');
         details.style.display = 'block';
-        if(backBtn && window.innerWidth <= 600) backBtn.style.display = 'inline-block';
+        if(mobileNav) mobileNav.style.display = 'none';
     }
 }
 
