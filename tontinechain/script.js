@@ -287,6 +287,16 @@ function simulatePayment(memberId) {
     saveTontines();
     updateRoundUI(tontine);
     renderTontines();
+
+    // AUTO-RELEASE : Si tout le monde a payé, on libère automatiquement
+    const totalToPay = tontine.orderedMembersFinal.length;
+    const paidCount = tontine.orderedMembersFinal.filter(mId => tontine.roundPaidStatus[mId] === true).length;
+    
+    if (paidCount === totalToPay) {
+        setTimeout(() => {
+            releaseFunds();
+        }, 1000); // Petit délai pour laisser l'utilisateur voir le dernier check vert
+    }
 }
 
 async function releaseFunds() {
