@@ -289,6 +289,7 @@ function simulatePayment(memberId) {
     const tontine = tontinesDB.find(t => t.id === activeTontineId);
     const member = membersDB.find(m => m.id === memberId);
     
+    if(!tontine.events) tontine.events = [];
     tontine.roundPaidStatus[memberId] = true;
     tontine.events.unshift({ time: new Date().toLocaleTimeString(), msg: `💰 Cotisation: ${member.name} (+${tontine.montant} FCFA)` });
     
@@ -313,6 +314,9 @@ async function releaseFunds() {
         const benId = tontine.orderedMembersFinal[tontine.currentRoundIndex];
         const ben = membersDB.find(m => m.id === benId);
         
+        if(!tontine.archives) tontine.archives = [];
+        if(!tontine.events) tontine.events = [];
+
         tontine.archives.unshift({ round: tontine.currentRoundIndex + 1, ben: ben.name, date: new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString() });
         tontine.events.unshift({ time: new Date().toLocaleTimeString(), msg: `🔓 FUNDS RELEASED: ${tontine.totalCagnotte} FCFA -> ${ben.name}` });
         
