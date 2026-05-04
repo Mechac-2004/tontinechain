@@ -216,9 +216,12 @@ function openTontineDetails(id) {
     const tontine = tontinesDB.find(t => t.id === id);
     if(!tontine) return;
 
+    const details = document.getElementById('tontineDetailsSection');
+    details.style.display = 'block';
     showScreen('details');
+    
     document.getElementById('contractBadge').textContent = tontine.contractAddress;
-    document.getElementById('detailTitle').textContent = tontine.name;
+    document.getElementById('detailTitle').textContent = tontine.name || "Tontine sans nom";
     
     updateRoundUI(tontine);
 }
