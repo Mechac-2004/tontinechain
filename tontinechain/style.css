@@ -29,55 +29,61 @@ body {
 .logo {
     font-size: 1.8rem;
     font-weight: 800;
-    background: linear-gradient(135deg, #0f5b3a, #1e8f5e);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-}
-.logo i {
-    color: #e67e22;
-    background: none;
-}
-.badge {
-    background: #1e8f5e15;
-    padding: 6px 14px;
-    border-radius: 40px;
-    color: #1e6e4a;
-    font-weight: 600;
-    font-size: 0.85rem;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { width: 100%; overflow-x: hidden; position: relative; }
+body { font-family: 'Inter', sans-serif; background: #f0f4f2; color: #2c3e50; padding: 40px 20px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+
+.container { max-width: 1200px; margin: 0 auto; width: 100%; }
+
+/* Header */
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; width: 100%; flex-wrap: wrap; gap: 20px; }
+.logo { font-size: 2rem; font-weight: 800; color: #1b5e3f; white-space: nowrap; }
+.logo i { color: #e67e22; }
 
 /* Dashboard Cards */
-.dashboard { display: grid; grid-template-columns: 450px 1fr; gap: 20px; width: 100%; }
+.dashboard { display: grid; grid-template-columns: 450px 1fr; gap: 32px; width: 100%; }
 
 /* Responsive Adjustments */
-@media (max-width: 1024px) {
-    .dashboard { grid-template-columns: 1fr; }
+@media (max-width: 1100px) {
+    .dashboard { grid-template-columns: 1fr; gap: 24px; }
     .details-grid { grid-template-columns: 1fr !important; }
 }
 
-@media (max-width: 768px) {
-    body { padding: 15px 5px; overflow-x: hidden; width: 100%; }
-    .container { width: 100%; padding: 0 10px; }
-    .header { flex-direction: column; gap: 15px; text-align: center; margin-bottom: 25px; }
-    .logo { font-size: 1.5rem; }
+@media (max-width: 600px) {
+    body { padding: 20px 10px; }
+    .container { padding: 0 5px; }
+    .header { justify-content: center; text-align: center; margin-bottom: 25px; }
+    .logo { font-size: 1.6rem; }
+    .card-header { padding: 15px; }
     .card-body { padding: 15px; }
-    .card-header { padding: 15px 20px; }
-    .round-banner { padding: 15px; border-radius: 16px; }
-    .round-banner h3 { font-size: 1.2rem !important; }
-    .details-grid { padding-left: 0 !important; gap: 15px !important; }
+    .round-banner { padding: 15px; border-radius: 16px; min-height: auto; }
+    .round-banner h3 { font-size: 1.3rem !important; }
+    .details-grid { gap: 20px !important; }
     
-    /* Supprimer les bordures latérales et forcer le plein écran */
-    div[style*="border-left"] { border-left: none !important; padding-left: 0 !important; border-top: 1px solid #eee; padding-top: 20px; margin-top: 20px; }
+    /* Forcer le plein écran sans débordement */
+    div[style*="border-left"], div[style*="border-right"] { 
+        border: none !important; 
+        padding: 0 !important; 
+        margin: 0 !important; 
+        border-top: 1px solid #eee !important; 
+        padding-top: 25px !important; 
+        margin-top: 25px !important; 
+    }
     
-    /* Grilles flexibles */
-    #roundPaymentsList { grid-template-columns: 1fr !important; }
-    .form-summary { grid-template-columns: 1fr !important; }
+    .tontine-item { border-radius: 16px; padding: 15px; }
+    #roundPaymentsList, .form-summary { grid-template-columns: 1fr !important; }
     
-    input, select, .btn-primary { width: 100% !important; box-sizing: border-box; }
+    input, select, button, .btn-primary { 
+        width: 100% !important; 
+        max-width: 100% !important;
+        height: auto !important;
+    }
+    
+    /* Éviter le débordement des textes longs */
+    * { overflow-wrap: break-word; word-wrap: break-word; }
 }
 
-.card { background: white; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); border: 1px solid #e2efe8; overflow: hidden; width: 100%; }
+.card { background: white; border-radius: 40px; box-shadow: 0 15px 45px rgba(0,0,0,0.04); border: 1px solid #e2efe8; overflow: hidden; width: 100%; max-width: 100%; }
 .card-header {
     padding: 20px 24px;
     background: #ffffff;
