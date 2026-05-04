@@ -52,20 +52,20 @@ function showScreen(screen) {
     if(mobileNav) mobileNav.style.display = 'flex';
     
     if(screen === 'creation') {
-        creation.classList.remove('mobile-hidden');
-        listing.classList.add('mobile-hidden');
-        details.classList.add('mobile-hidden');
+        creation.classList.remove('mobile-hidden'); creation.style.display = 'block';
+        listing.classList.add('mobile-hidden'); listing.style.display = 'none';
+        details.classList.add('mobile-hidden'); details.style.display = 'none';
         tabC.style.background = '#1b5e3f'; tabC.style.color = 'white';
         tabL.style.background = '#f8f9fa'; tabL.style.color = '#7f8c8d';
     } else if (screen === 'listing') {
-        creation.classList.add('mobile-hidden');
-        listing.classList.remove('mobile-hidden');
-        details.classList.add('mobile-hidden');
+        creation.classList.add('mobile-hidden'); creation.style.display = 'none';
+        listing.classList.remove('mobile-hidden'); listing.style.display = 'block';
+        details.classList.add('mobile-hidden'); details.style.display = 'none';
         tabL.style.background = '#1b5e3f'; tabL.style.color = 'white';
         tabC.style.background = '#f8f9fa'; tabC.style.color = '#7f8c8d';
     } else if (screen === 'details') {
-        creation.classList.add('mobile-hidden');
-        listing.classList.add('mobile-hidden');
+        creation.classList.add('mobile-hidden'); creation.style.display = 'none';
+        listing.classList.add('mobile-hidden'); listing.style.display = 'none';
         details.classList.remove('mobile-hidden');
         details.style.display = 'block';
         if(mobileNav) mobileNav.style.display = 'none';
