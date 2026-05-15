@@ -301,16 +301,32 @@ function updateRoundUI(t) {
     listDiv.innerHTML = t.members.map(m => {
         const isBenef = m.id === beneficiaryId;
         const hasPaid = t.roundPaidStatus[m.id] === true;
+        const isDefaulting = t.defaultingMembers && t.defaultingMembers.includes(m.id);
+        const lateMembers = t.lateMembers || [];
+        const isLate = !hasPaid && !isDefaulting && lateMembers.includes(m.id);
         const today = new Date();
-        const dueDate = new Date(t.dateDebut); 
-        const isLate = today > dueDate;
+        const dueDate = new Date(t.dateDebut);
+        const isPastDue = !hasPaid && !isDefaulting && today > dueDate && !isLate;
+
+        let bgColor = 'white';
+        if (isDefaulting) bgColor = '#fff0f0';
+        else if (isBenef && !hasPaid) bgColor = '#fff9e0';
+        else if (isLate) bgColor = '#fff7e6';
 
         return `
-            <div style="background:${isBenef && !hasPaid ? '#fff9e0' : 'white'}; border:1px solid ${hasPaid ? '#2ecc71' : '#e2ece2'}; border-radius:20px; padding:12px; display:flex; justify-content:space-between; align-items:center; opacity:${isDissolved && !hasPaid ? '0.5' : '1'}">
-                <div><i class="fas ${hasPaid ? 'fa-check-circle' : (isDissolved ? 'fa-ban' : 'fa-circle-notch')}" style="color:${hasPaid ? '#2ecc71' : (isDissolved ? '#e74c3c' : '#ccc')}"></i> ${escapeHtml(m.name)}</div>
+            <div style="background:${bgColor}; border:1px solid ${isDefaulting ? '#e74c3c' : hasPaid ? '#2ecc71' : isLate ? '#f39c12' : '#e2ece2'}; border-radius:20px; padding:12px; display:flex; justify-content:space-between; align-items:center; opacity:${isDissolved && !hasPaid ? '0.5' : '1'}">
+                <div>
+                    <i class="fas ${hasPaid ? 'fa-check-circle' : isDefaulting ? 'fa-user-slash' : isDissolved ? 'fa-ban' : isLate ? 'fa-clock' : 'fa-circle-notch'}" 
+                       style="color:${hasPaid ? '#2ecc71' : isDefaulting ? '#e74c3c' : isDissolved ? '#e74c3c' : isLate ? '#f39c12' : '#ccc'}"></i>
+                    ${escapeHtml(m.name)}
+                    ${isDefaulting ? '<span style="background:#e74c3c;color:white;font-size:0.65rem;padding:2px 6px;border-radius:10px;margin-left:6px;">⚠️ DÉFAILLANT</span>' : ''}
+                    ${isLate ? '<span style="background:#f39c12;color:white;font-size:0.65rem;padding:2px 6px;border-radius:10px;margin-left:6px;">⏰ EN RETARD</span>' : ''}
+                    ${isPastDue ? '<span style="background:#e67e22;color:white;font-size:0.65rem;padding:2px 6px;border-radius:10px;margin-left:6px;">⏰ RETARD</span>' : ''}
+                </div>
                 <div style="display:flex; gap:8px;">
-                    ${(!hasPaid && isLate && !isDissolved) ? `<button onclick="reportDelay('${m.id}', ${t.id})" class="btn-sm" style="background:#fef5f5; color:#c0392b; border:1px solid #fab1a0;"><i class="fas fa-exclamation-triangle"></i> Retard</button>` : ''}
-                    ${hasPaid ? `<button onclick="showPaymentReceipt('${m.id}', ${t.id})" class="btn-sm" style="background:${isDissolved ? '#fdeaea' : '#dff0e6'}; color:${isDissolved ? '#c0392b' : '#1b5e3f'}; border:1px solid ${isDissolved ? '#fab1a0' : '#2ecc71'}; cursor:pointer;"><i class="fas ${isDissolved ? 'fa-undo' : 'fa-check'}"></i> ${isDissolved ? 'À Rembourser' : 'Déjà Payé'}</button>` : (isDissolved ? '' : `<button onclick="openPaymentModal('${m.id}', ${t.id})" class="btn-sm" style="background:#3498db; color:white;">Payer</button>`)}
+                    ${!hasPaid && !isDefaulting && !isDissolved && (isLate || isPastDue) ? `<button onclick="reportDelay('${m.id}', ${t.id})" class="btn-sm" style="background:#fef5f5; color:#c0392b; border:1px solid #fab1a0;"><i class="fas fa-exclamation-triangle"></i> Retard</button>` : ''}
+                    ${!hasPaid && !isDissolved && !isDefaulting ? `<button onclick="markDefaulting('${m.id}', ${t.id})" class="btn-sm" style="background:#fdeaea; color:#e74c3c; border:1px solid #e74c3c;"><i class="fas fa-user-slash"></i> Défaillant</button>` : ''}
+                    ${hasPaid ? `<button onclick="showPaymentReceipt('${m.id}', ${t.id})" class="btn-sm" style="background:${isDissolved ? '#fdeaea' : '#dff0e6'}; color:${isDissolved ? '#c0392b' : '#1b5e3f'}; border:1px solid ${isDissolved ? '#fab1a0' : '#2ecc71'}; cursor:pointer;"><i class="fas ${isDissolved ? 'fa-undo' : 'fa-check'}"></i> ${isDissolved ? 'À Rembourser' : 'Déjà Payé'}</button>` : (isDissolved || isDefaulting ? '' : `<button onclick="openPaymentModal('${m.id}', ${t.id})" class="btn-sm" style="background:#3498db; color:white;">Payer</button>`)}
                 </div>
             </div>
         `;
@@ -384,15 +400,30 @@ function dissolveTontine(tontineId) {
 function reportDelay(memberId, tontineId) {
     const t = tontinesDB.find(x => x.id === tontineId);
     const m = t.members.find(x => x.id === memberId);
-    t.events.push({ time: new Date().toLocaleTimeString(), msg: `⚠️ Retard signalé pour ${m.name}` });
+    if (!t.lateMembers) t.lateMembers = [];
+    if (!t.lateMembers.includes(memberId)) t.lateMembers.push(memberId);
+    t.events.push({ time: new Date().toLocaleTimeString(), msg: `⚠️ RETARD signalé pour ${m.name} - cotisation non reçue` });
     saveTontines(t).then(() => {
         openTontineDetails(tontineId);
-        showToast(`Retard signalé pour ${m.name}`);
+        showToast(`⚠️ Retard signalé pour ${m.name}`);
     });
 }
 
-window.reportDelay = reportDelay;
-window.dissolveTontine = dissolveTontine;
+function markDefaulting(memberId, tontineId) {
+    const t = tontinesDB.find(x => x.id === tontineId);
+    const m = t.members.find(x => x.id === memberId);
+    if (!confirm(`Confirmer que ${m.name} est membre défaillant ? Cette action est irréversible pour ce round.`)) return;
+    if (!t.defaultingMembers) t.defaultingMembers = [];
+    if (!t.defaultingMembers.includes(memberId)) t.defaultingMembers.push(memberId);
+    t.events.push({ time: new Date().toLocaleTimeString(), msg: `🚫 ${m.name} marqué DÉFAILLANT - exlu du round actuel` });
+    showToast(`🚫 ${m.name} est marqué comme défaillant`);
+    saveTontines(t).then(() => {
+        openTontineDetails(tontineId);
+        renderTontines();
+    });
+}
+
+window.markDefaulting = markDefaulting;
 
 function closePaymentModal(reload = false) {
     const modal = document.getElementById('paymentModal');
