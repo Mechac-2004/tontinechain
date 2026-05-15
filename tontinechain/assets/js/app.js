@@ -609,7 +609,7 @@ document.getElementById('startExploreBtn')?.addEventListener('click', () => {
 
     await loadMembers();
     await loadTontines();
-    await connectWallet(true); // Tentative de reconnexion automatique silencieuse
+    // await connectWallet(true); // Suppression de la connexion automatique pour la démo
     renderMembersChecklist();
     renderTontines();
     updateTontineSummary();
