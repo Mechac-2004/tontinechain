@@ -1,268 +1,92 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>TontineChain | Web3 Dashboard 🔗</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>TontineChain | Gestion complète</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
-    <!-- Librairies Premium -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
-
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
 <div class="container">
     <div class="header">
         <div class="logo"><i class="fas fa-link"></i> Tontine<span style="color:#e67e22;">Chain</span></div>
-        <div id="walletSection">
-            <button id="connectWalletBtn" class="btn-sm" style="background: #1e8f5e; color: white; border: none; padding: 10px 20px; box-shadow: 0 4px 10px rgba(30, 143, 94, 0.2);">
-                <i class="fas fa-wallet"></i> Connect Wallet
-            </button>
-        <span id="walletAddress" class="badge" style="display: none; background: #eaf5ee; color: #1e6e4a;">Non connecté</span>
-        </div>
-    </div>
-
-    <!-- Navigation Mobile (Onglets) -->
-    <div id="mobileNav" class="mobile-only" style="display: none; margin-bottom: 20px; background: white; padding: 10px; border-radius: 20px; display: flex; gap: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-        <button onclick="showScreen('creation')" id="tabCreation" class="btn-sm" style="flex:1; background: #1b5e3f; color: white; border-radius:15px; padding: 12px;">
-            <i class="fas fa-plus"></i> Créer
-        </button>
-        <button onclick="showScreen('listing')" id="tabListing" class="btn-sm" style="flex:1; background: #f8f9fa; color: #7f8c8d; border-radius:15px; padding: 12px; border: 1px solid #eee;">
-            <i class="fas fa-list"></i> Mes Contrats
-        </button>
+        <div><button id="connectWalletBtn" class="btn-sm" style="background:#1e8f5e; color:white;"><i class="fas fa-wallet"></i> Connect Wallet</button></div>
     </div>
 
     <div id="mainDashboard" class="dashboard">
-        <!-- COLONNE GAUCHE : Création tontine + règles -->
+        <!-- CARTE CRÉATION AVEC CHECKLIST MEMBRES -->
         <div id="creationCard" class="card">
-            <div class="card-header">
-                <h2><i class="fas fa-plus-circle"></i> Déployer une tontine</h2>
-                <p class="text-muted" style="margin-top: 6px;">Paramétrez les règles de votre Smart Contract.</p>
-            </div>
+            <div class="card-header"><h2><i class="fas fa-plus-circle"></i> Créer une tontine</h2></div>
             <div class="card-body">
-                <div class="form-group">
-                    <label><i class="fas fa-tag"></i> Nom du contrat</label>
-                    <input type="text" id="tontineName" placeholder="ex: Tontine Bénin 2026" value="Tontine Bénin 2026">
+                <div class="form-group"><label>Nom de la tontine</label><input type="text" id="tontineName" value="Tontine des Amazones"></div>
+                <div class="form-group"><label><i class="fas fa-users"></i> Participants (cochez les membres)</label>
+                    <div id="membersChecklist" class="members-selector"></div>
+                    <button id="openAddMemberModalBtn" class="btn-sm btn-outline-green" style="margin-top:8px;"><i class="fas fa-user-plus"></i> Nouveau membre</button>
                 </div>
-                <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                    <div>
-                        <label><i class="fas fa-coins"></i> Montant (FCFA)</label>
-                        <input type="number" id="montant" value="10000" step="1000">
-                    </div>
-                    <div>
-                        <label><i class="fas fa-hourglass-half"></i> Délai (jours)</label>
-                        <select id="delaiPaiement">
-                            <option value="3">3 jours</option>
-                            <option value="5" selected>5 jours</option>
-                            <option value="7">7 jours</option>
-                        </select>
-                    </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Montant (FCFA)</label><input type="number" id="montant" value="10000" step="1000"></div>
+                    <div class="form-group"><label>Fréquence</label><select id="frequence"><option>Mensuelle</option><option>Hebdomadaire</option></select></div>
                 </div>
-                
-                <div class="form-group">
-                    <label><i class="fas fa-users"></i> Membres Participants</label>
-                    <div id="membersChecklist" class="members-selector">
-                        <!-- Chargé dynamiquement -->
-                    </div>
-                    <button type="button" id="openAddMemberModalBtn" class="btn-sm btn-outline-green" style="margin-top: 8px; font-size: 0.75rem;"><i class="fas fa-user-plus"></i> Nouveau membre</button>
+                <div class="form-group"><label>Date de début</label><input type="date" id="dateDebut" value="2026-06-01"></div>
+                <div class="form-group"><label>Ordre bénéficiaires</label><select id="ordre"><option>Aléatoire</option><option>Fixe</option></select></div>
+                <div class="form-group"><label>Pénalité retard (%)</label><input type="number" id="penalite" value="5" step="1"></div>
+                <div class="info-highlight">
+                    <div><span class="info-label">Total cagnotte</span><div class="info-value" id="totalPreview">0 FCFA</div></div>
+                    <div><span class="info-label">Durée</span><div class="info-value" id="dureePreview">0 cycles</div></div>
                 </div>
-
-                <div class="form-group">
-                    <label><i class="fas fa-gavel"></i> Pénalité de retard</label>
-                    <select id="penalite">
-                        <option value="exclusion">Exclusion du Smart Contract</option>
-                        <option value="amende">Amende 5% (Distribuée)</option>
-                        <option value="blocage" selected>Gel du cycle de paiement</option>
-                    </select>
-                </div>
-
-                <div class="form-summary">
-                    <div class="summary-item">
-                        <label>Cagnotte totale</label>
-                        <div class="summary-value" id="totalCagnotteDisplay">0 FCFA</div>
-                    </div>
-                    <div class="summary-item">
-                        <label>Durée totale</label>
-                        <div class="summary-value" id="dureeDisplay">0 cycles</div>
-                    </div>
-                </div>
-
-                <button id="createTontineBtn" class="btn-primary" style="margin-top: 20px;"><i class="fas fa-shield-alt"></i> INITIALISER SUR LA BLOCKCHAIN</button>
-                <div id="createFeedback" style="margin-top: 16px;"></div>
+                <div class="text-muted" style="text-align:center; margin:12px 0;"><i class="fas fa-link"></i> Sécurisé par blockchain</div>
+                <button id="createTontineBtn" class="btn-primary"><i class="fas fa-cube"></i> Créer la tontine</button>
             </div>
         </div>
 
-        <!-- COLONNE DROITE : Liste des tontines -->
+        <!-- CARTE LISTE -->
         <div id="listingCard" class="card">
-            <div class="card-header flex-between">
-                <h2><i class="fas fa-shapes"></i> Vos Tontines Actives</h2>
-                <div id="membersCount" class="badge" style="font-size: 0.7rem;">0 membres inscrits</div>
-            </div>
-            <div class="card-body">
-                <div id="tontinesList" style="max-height: 500px; overflow-y: auto;">
-                    <!-- Liste des tontines -->
-                </div>
-            </div>
+            <div class="card-header flex-between"><h2><i class="fas fa-shapes"></i> Vos Tontines</h2><div id="tontineCount" class="text-muted">0 tontine</div></div>
+            <div class="card-body"><div id="tontinesList"></div></div>
         </div>
     </div>
 
-    <!-- SECTION DÉTAILS : Dashboard de gestion avec Graphique -->
-    <div id="tontineDetailsSection" class="card" style="display: none; margin-top: 32px; border: 2px solid #2ecc71; animation: slideUp 0.4s ease;">
-        <div class="card-header" style="display: flex; justify-content: space-between; align-items: start; padding: 24px;">
-            <div>
-                <h2 id="detailTitle">Gestion de la tontine</h2>
-                <div style="display: flex; gap: 10px; margin-top: 8px;">
-                    <span id="contractBadge" class="rule-badge" style="font-family: monospace; background: #f0f0f0;">0x...</span>
-                    <span id="statusBadge" class="rule-badge" style="background: #eaf5ee; color: #2ecc71;">STATUT : ACTIF</span>
-                </div>
+    <!-- SECTION DÉTAILS -->
+    <div id="tontineDetailsSection" class="card" style="display: none; margin-top: 32px;">
+        <div class="card-header flex-between"><h2 id="detailTitle">Détail</h2><button onclick="closeTontineDetails()" class="btn-sm" style="background:#fdeaea; color:#c0392b;">Fermer</button></div>
+        <div class="card-body">
+            <div class="stats-banner">
+                <div style="font-size:0.8rem;">Cagnotte actuelle</div>
+                <div class="cagnotte-amount" id="cagnotteAmount">0 FCFA</div>
+                <div id="roundInfoDetail" style="margin-top:8px;"></div>
             </div>
-            <button onclick="closeTontineDetails()" class="btn-sm" style="background:#f8f9fa; color:#2c3e50; border:1px solid #ddd; padding: 10px 15px; margin-right: 10px; display: none;" id="mobileBackBtn"><i class="fas fa-chevron-left"></i> Retour</button>
-            <button onclick="closeTontineDetails()" class="btn-sm" style="background:#fdeaea; color:#c0392b; width: 40px; height: 40px; border-radius: 50%;"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="card-body" style="padding-top: 0;">
-            <!-- Section Libération (Apparaît quand c'est plein) -->
-            <div id="releaseSection" class="card-body" style="display: none; background: #fff9db; border: 2px solid #f1c40f; border-radius: 20px; text-align: center; padding: 20px; margin-bottom: 24px; animation: pulse 2s infinite;">
-                <p style="color: #7d6608; font-weight: 800; margin-bottom: 15px;"><i class="fas fa-crown"></i> CAGNOTTE 100% PRÊTE !</p>
-                <button id="releaseFundsBtn" class="btn-primary" style="background: #f1c40f; color: #7d6608; border: none; font-weight: 900; font-size: 1.1rem; width: 100%; box-shadow: 0 4px 15px rgba(241, 196, 15, 0.4);">
-                    <i class="fas fa-magic"></i> LIBÉRER LES FONDS
-                </button>
-            </div>
-
-            <div class="details-grid" style="display: grid; grid-template-columns: 1fr 300px; gap: 32px;">
-                
-                <!-- GAUCHE : État actuel et paiements -->
+            <div style="display:grid; grid-template-columns:1fr 260px; gap:24px;">
                 <div>
-                    <div class="round-banner" style="background: #1b5e3f; color: white; padding: 24px; border-radius: 24px; margin-bottom: 24px; position: relative; overflow: hidden;">
-                        <span style="font-size: 0.8rem; opacity: 0.8; letter-spacing: 1px;">ROUND ACTUEL</span>
-                        <h3 id="currentBeneficiaryDisplay" style="font-size: 2rem; margin: 8px 0;">Chargement...</h3>
-                        <p id="roundInfoDisplay" style="opacity: 0.8;"></p>
-                        <i class="fas fa-star" style="position: absolute; right: 20px; top: 20px; font-size: 3rem; opacity: 0.2;"></i>
-                    </div>
-
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                        <h3 style="font-size: 1.1rem;"><i class="fas fa-users"></i> État des cotisations</h3>
-                        <div id="timerDisplay" style="color: #e67e22; font-weight: bold; font-size: 0.9rem;"><i class="fas fa-clock"></i> Expire dans: 4j 22h</div>
-                    </div>
-                    
-                    <div id="roundPaymentsList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px;">
-                        <!-- Membres -->
-                    </div>
-
-                    <!-- Journal des événements -->
-                    <div id="historySection" style="margin-top: 32px; border-top: 1px solid #eee; padding-top: 24px;">
-                        <h3 style="font-size: 0.9rem; color: #7f8c8d; margin-bottom: 12px; display: flex; justify-content: space-between;">
-                            <span><i class="fas fa-list-alt"></i> Journal de transactions</span>
-                            <span style="font-size: 0.7rem; color: #2ecc71;"><i class="fas fa-sync fa-spin"></i> Live Sync</span>
-                        </h3>
-                        <div id="eventLogs" style="max-height: 120px; overflow-y: auto; font-family: monospace; font-size: 0.75rem; background: #2c3e50; color: #ecf0f1; padding: 16px; border-radius: 12px; box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);">
-                        </div>
-                    </div>
+                    <h3><i class="fas fa-users"></i> État des paiements</h3>
+                    <div id="roundPaymentsList" style="display:grid; gap:12px; margin-top:16px;"></div>
+                    <div style="margin-top:24px;"><h3>Journal</h3><div id="eventLogs" style="background:#2c3e50; color:#ecf0f1; padding:12px; border-radius:20px; font-size:0.7rem; max-height:120px; overflow-y:auto;"></div></div>
                 </div>
-
-                <!-- DROITE : Graphique et Actions -->
-                <div style="border-left: 1px solid #eee; padding-left: 24px;">
-                    <div style="text-align: center; margin-bottom: 24px;">
-                        <label style="display: block; font-size: 0.8rem; margin-bottom: 12px;">PROGRÈS COLLECTE</label>
-                        <div style="position: relative; width: 100%; aspect-ratio: 1;">
-                            <canvas id="progressChart"></canvas>
-                        </div>
-                        <div id="cagnotteProgress" style="margin-top: 12px; font-size: 1.1rem; font-weight: bold; color: #1b5e3f;">0 / 0 FCFA</div>
-                    </div>
-
-                    <div id="releaseSection" style="display: none; animation: fadeIn 0.4s ease;">
-                        <button id="releaseFundsBtn" class="btn-primary" style="background: #2ecc71; border-radius: 20px; padding: 18px; font-size: 1rem; box-shadow: 0 10px 30px rgba(46, 204, 113, 0.3);">
-                            <i class="fas fa-lock-open"></i> LIBÉRER LES FONDS
-                        </button>
-                        <p class="text-muted" style="text-align:center; margin-top: 12px; font-size: 0.7rem;">Requiert signature Smart Contract</p>
-                    </div>
-
-                    <!-- Archives des Rounds -->
-                    <div style="margin-top: 32px;">
-                        <h4 style="font-size: 0.8rem; text-transform: uppercase; color: #95a5a6; margin-bottom: 15px;">Archives des bénéficiaires</h4>
-                        <div id="archivedRounds" style="font-size: 0.8rem;">
-                            <!-- Liste des tours passés -->
-                            <p class="text-muted" style="font-style: italic;">Aucun round archivé.</p>
-                        </div>
-                    </div>
+                <div>
+                    <div style="text-align:center;"><canvas id="progressChart" style="max-width:180px; margin:0 auto;"></canvas><div id="cagnotteProgress" class="text-muted" style="margin-top:8px;"></div></div>
+                    <div id="releaseSection" style="display:none; margin-top:20px;"><button id="releaseFundsBtn" class="btn-primary" style="background:#f1c40f; color:#7d6608;">LIBÉRER LES FONDS</button></div>
+                    <div style="margin-top:24px;"><h4>Archives</h4><div id="archivedRounds"></div></div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modale Membre -->
-<div id="memberModal" style="display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px);">
-    <div style="background: white; max-width: 400px; margin: auto; border-radius: 40px; padding: 32px; animation: slideUp 0.3s ease; width: 90%;">
-        <h3 style="font-size: 1.4rem; color: #1b5e3f;"><i class="fas fa-user-plus"></i> Nouveau membre</h3>
-        <p class="text-muted" style="margin-bottom: 20px;">Ajoutez-le à la base de données partagée.</p>
-        <input type="text" id="newMemberName" placeholder="Nom complet" style="margin-bottom: 16px;">
-        <input type="email" id="newMemberEmail" placeholder="Adresse Email (fictif)" style="margin-bottom: 20px;">
-        <div style="display: flex; gap:12px; justify-content: flex-end;">
-            <button id="closeModalBtn" class="btn-sm" style="background: #f8f9fa;">Annuler</button>
-            <button id="confirmAddMemberBtn" class="btn-primary" style="width: auto; padding: 10px 24px;">Enregistrer</button>
+<!-- MODAL AJOUT MEMBRE -->
+<div id="memberModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:1000;">
+    <div style="background:white; max-width:400px; width:90%; border-radius:40px; padding:24px;">
+        <h3><i class="fas fa-user-plus"></i> Nouveau membre</h3>
+        <input type="text" id="newMemberName" placeholder="Nom complet" style="width:100%; margin:16px 0; padding:12px; border-radius:40px;">
+        <div style="display:flex; gap:12px; justify-content:flex-end;">
+            <button id="closeModalBtn" class="btn-sm">Annuler</button>
+            <button id="confirmAddMemberBtn" class="btn-primary" style="width:auto;">Ajouter</button>
         </div>
     </div>
 </div>
 
-<style>
-/* Reset & Global */
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Inter', sans-serif; background: #f0f4f2; color: #2c3e50; padding: 40px 20px; line-height: 1.5; }
-.container { max-width: 1200px; margin: 0 auto; }
-
-/* Header */
-.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-.logo { font-size: 2rem; font-weight: 800; color: #1b5e3f; }
-.logo i { color: #e67e22; }
-
-/* Dashboard Cards */
-.dashboard { display: grid; grid-template-columns: 450px 1fr; gap: 32px; }
-.card { background: white; border-radius: 40px; box-shadow: 0 15px 45px rgba(0,0,0,0.04); border: 1px solid #e2efe8; overflow: hidden; }
-.card-header { padding: 24px 32px; border-bottom: 1px solid #f0f7f3; }
-.card-header h2 { font-size: 1.25rem; color: #1b5e3f; display: flex; align-items: center; gap: 12px; }
-.card-body { padding: 32px; }
-
-/* Forms */
-.form-group { margin-bottom: 20px; }
-label { font-weight: 600; font-size: 0.85rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; color: #476a54; }
-input, select { width: 100%; padding: 14px 20px; border: 2px solid #edf2f0; border-radius: 20px; font-size: 0.95rem; transition: all 0.2s; }
-input:focus { border-color: #1e8f5e; outline: none; box-shadow: 0 0 0 4px rgba(30,143,94,0.05); }
-
-/* Buttons */
-.btn-sm { padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; }
-.btn-primary { background: #1b5e3f; color: white; border: none; padding: 16px; border-radius: 24px; font-weight: 700; width: 100%; cursor: pointer; transition: 0.3s; }
-.btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-.btn-outline-green { background: transparent; border: 2px solid #2ecc71; color: #2ecc71; }
-
-/* Selector */
-.members-selector { background: #f8fbfa; border-radius: 20px; padding: 10px; max-height: 200px; overflow-y: auto; border: 1px solid #edf2f0; }
-.member-check { display: flex; align-items: center; gap: 10px; padding: 10px 15px; background: white; margin: 4px 0; border-radius: 15px; border: 1px solid #f0f7f3; }
-.member-check input { width: 18px; height: 18px; accent-color: #1e8f5e; }
-
-/* Tontine List */
-.tontine-item { background: #f9fdfb; padding: 20px; border-radius: 24px; border-left: 8px solid #2ecc71; margin-bottom: 16px; transition: 0.2s; cursor: pointer; }
-.tontine-item:hover { transform: scale(1.02); box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-left-width: 12px; }
-
-/* Badges */
-.rule-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; background: #f0f7f3; color: #2ecc71; }
-.badge { padding: 6px 12px; border-radius: 10px; font-weight: bold; }
-
-/* Summary */
-.form-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.summary-item { background: #f4fbf7; padding: 16px; border-radius: 20px; border: 1px solid #e2efe8; }
-.summary-item label { color: #6f8b7c; font-size: 0.75rem; margin-bottom: 4px; }
-.summary-value { font-size: 1.1rem; font-weight: 800; color: #1b5e3f; }
-
-/* Animations */
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-
-.payment-btn:hover { background: #2ecc71 !important; color: white !important; }
-</style>
-
-<script src="script.js"></script>
+<script src="./app.js"></script>
 </body>
 </html>
