@@ -1,17 +1,17 @@
 <?php
 // Configuration de la base de données
 // InfinityFree : Remplissez ces valeurs avec celles de votre Control Panel
-$host = 'sql312.infinityfree.com'; 
+/*$host = 'sql312.infinityfree.com'; 
 $db   = 'if0_41111892_tontine_db';
 $user = 'if0_41111892';
 $pass = 'i1umVH4FGD58PfU';
-$charset = 'utf8mb4';
+$charset = 'utf8mb4';*/
 
-/*$host = 'localhost'; 
+$host = 'localhost'; 
 $db   = 'tontine_db';
 $user = 'assmedev';
 $pass = 'password@123';
-$charset = 'utf8mb4';*/
+$charset = 'utf8mb4';
 
 // En local, on garde les valeurs actuelles
 if ($_SERVER['REMOTE_ADDR'] == '127.0.0.1' || $_SERVER['REMOTE_ADDR'] == '::1') {
